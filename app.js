@@ -44,7 +44,7 @@ app.get("/detect", async (req, res) => {
     activeToken = token;
 
     const qrURL =
-        `http://localhost:3000/login?token=${token}`;
+    `https://smart-parking-system-dz33.onrender.com/login?token=${token}`;
 
     const qrImage =
         await QRCode.toDataURL(qrURL);
