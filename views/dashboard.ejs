@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parking Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <h1 class="mb-4">
+        Smart Parking Dashboard
+    </h1>
+
+    <h3>Floor 1</h3>
+
+    <div class="card p-3 mb-3">
+
+        <p>
+            A1 :
+            <%= parkingStatus.A1 ? "🔴 Occupied" : "🟢 Free" %>
+        </p>
+
+        <p>
+            A2 :
+            <%= parkingStatus.A2 ? "🔴 Occupied" : "🟢 Free" %>
+        </p>
+
+    </div>
+
+    <h3>Floor 2</h3>
+
+    <div class="card p-3">
+
+        <p>
+            B1 :
+            <%= parkingStatus.B1 ? "🔴 Occupied" : "🟢 Free" %>
+        </p>
+
+        <p>
+            B2 :
+            <%= parkingStatus.B2 ? "🔴 Occupied" : "🟢 Free" %>
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -195,3 +195,27 @@ app.get("/status", (req, res) => {
         paymentDone
     });
 });
+
+app.use(express.json());
+
+let parkingStatus = {
+    A1: false,
+    A2: false,
+    B1: false,
+    B2: false
+};
+
+app.post("/sensor-update", (req, res) => {
+
+    parkingStatus = req.body;
+
+    console.log(parkingStatus);
+
+    res.json({
+        success: true
+    });
+});
+
+app.get("/parking-status", (req, res) => {
+    res.json(parkingStatus);
+});
