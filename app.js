@@ -70,6 +70,19 @@ app.get("/status", (req, res) => {
 });
 const PORT = process.env.PORT || 3000;
 
+app.get("/api/new-token", (req, res) => {
+
+    const token = uuidv4();
+
+    activeToken = token;
+
+    res.json({
+        token,
+        url: `https://smart-parking-system-dz33.onrender.com/login?token=${token}`
+    });
+
+});
+
 app.listen(PORT, () => {
     console.log(`Running on port ${PORT}`);
 });
@@ -224,15 +237,3 @@ app.get("/dashboard", (req, res) => {
 
 });
 
-app.get("/api/new-token", (req, res) => {
-
-    const token = uuidv4();
-
-    activeToken = token;
-
-    res.json({
-        token,
-        url: `https://smart-parking-system-dz33.onrender.com/login?token=${token}`
-    });
-
-});
