@@ -76,10 +76,10 @@ app.get("/api/new-token", (req, res) => {
 
     activeToken = token;
 
-    res.json({
-        token,
-        url: `https://smart-parking-system-dz33.onrender.com/login?token=${token}`
-    });
+   res.json({
+    token,
+    url: `https://smart-parking-system-dz33.onrender.com/t/${token}`
+});
 
 });
 
@@ -98,6 +98,14 @@ app.get("/login", (req, res) => {
     res.render("login", {
         token: token
     });
+
+});
+
+app.get("/t/:token", (req, res) => {
+
+    res.redirect(
+      `/login?token=${req.params.token}`
+    );
 
 });
 
