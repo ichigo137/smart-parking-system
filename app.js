@@ -181,6 +181,13 @@ app.post("/payment-success", (req, res) => {
     floors[Math.floor(Math.random() * floors.length)];
     
     const floor = slot.startsWith("A") ? "A" : "B";
+
+    if (slot === "A-01") parkingStatus.A1 = true;
+    if (slot === "A-02") parkingStatus.A2 = true;
+    if (slot === "B-01") parkingStatus.B1 = true;
+    if (slot === "B-02") parkingStatus.B2 = true;
+
+    
     res.render("success", {
 
         txn,
@@ -192,12 +199,6 @@ app.post("/payment-success", (req, res) => {
 
     });
 
-});
-
-app.get("/status", (req, res) => {
-    res.json({
-        paymentDone
-    });
 });
 
 app.use(express.json());
