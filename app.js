@@ -101,7 +101,7 @@ app.get("/login", (req, res) => {
 
 });
 
-aapp.get("/t/:token", (req, res) => {
+app.get("/t/:token", (req, res) => {
 
     activeToken = req.params.token;
 
