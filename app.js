@@ -20,10 +20,8 @@ app.use(express.static("public"));
 const floors = [
     "A-01",
     "A-02",
-    "A-03",
     "B-01",
     "B-02",
-    "B-03"
 ];
 
 app.use(bodyParser.urlencoded({
@@ -187,7 +185,7 @@ app.post("/payment-success", (req, res) => {
     if (slot === "B-01") parkingStatus.B1 = true;
     if (slot === "B-02") parkingStatus.B2 = true;
 
-    
+
     res.render("success", {
 
         txn,
