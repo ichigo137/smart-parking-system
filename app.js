@@ -177,13 +177,10 @@ app.post("/payment-success", (req, res) => {
         "TXN" +
         Math.floor(Math.random() * 1000000);
 
-    const floor =
-        Math.floor(Math.random() * 3) + 1;
-
     const slot =
-        "A-" +
-        (Math.floor(Math.random() * 20) + 1);
-
+    floors[Math.floor(Math.random() * floors.length)];
+    
+    const floor = slot.startsWith("A") ? "A" : "B";
     res.render("success", {
 
         txn,
@@ -204,13 +201,6 @@ app.get("/status", (req, res) => {
 });
 
 app.use(express.json());
-
-let parkingStatus = {
-    A1: false,
-    A2: false,
-    B1: false,
-    B2: false
-};
 
 app.post("/sensor-update", (req, res) => {
 
