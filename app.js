@@ -162,6 +162,8 @@ app.get("/payment", (req, res) => {
 
 app.post("/payment-success", (req, res) => {
 
+    const entryTime = new Date().toLocaleString();
+
     paymentDone = true;
 
     const txn =
@@ -181,7 +183,8 @@ app.post("/payment-success", (req, res) => {
         floor,
         slot,
         plan: req.body.plan,
-        user: currentUser
+        user: currentUser,
+        entryTime
 
     });
 
