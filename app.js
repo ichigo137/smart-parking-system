@@ -109,6 +109,10 @@ app.get("/t/:token", (req, res) => {
 
 });
 
+app.get("/scan", (req, res) => {
+    res.render("scan");
+});
+
 
 app.post("/verify", (req, res) => {
     const {
