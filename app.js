@@ -72,8 +72,8 @@ const PORT = process.env.PORT || 3000;
 
 app.get("/api/new-token", (req, res) => {
 
-    const token = uuidv4();
-
+const token =
+Math.random().toString(36).substring(2,8).toUpperCase();
     activeToken = token;
 
    res.json({
