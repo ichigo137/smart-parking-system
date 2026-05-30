@@ -7,6 +7,13 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
+let parkingStatus = {
+    A1: false,
+    A2: false,
+    B1: false,
+    B2: false
+};
+
 app.use(express.static("public"));
 
 
@@ -218,4 +225,12 @@ app.post("/sensor-update", (req, res) => {
 
 app.get("/parking-status", (req, res) => {
     res.json(parkingStatus);
+});
+
+app.get("/dashboard", (req, res) => {
+
+    res.render("dashboard", {
+        parkingStatus
+    });
+
 });
