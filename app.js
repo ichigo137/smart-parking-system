@@ -31,6 +31,8 @@ let paymentDone = false;
 
 let users = [];
 
+let currentUser = null;
+
 app.get("/", (req, res) => {
     res.render("gate");
 });
@@ -82,12 +84,22 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/verify", (req, res) => {
-
     const {
-        name,
-        email,
-        token
-    } = req.body;
+    name,
+    email,
+    phone,
+    vehicleNumber,
+    vehicleType,
+    token
+} = req.body;
+
+currentUser = {
+    name,
+    email,
+    phone,
+    vehicleNumber,
+    vehicleType
+};
 
     if (token !== activeToken) {
         return res.send("Token Expired");
@@ -141,7 +153,8 @@ app.get("/payment", (req, res) => {
     res.render("payment", {
 
         plan: req.query.plan,
-        amount: req.query.amount
+        amount: req.query.amount,
+        user: currentUser
 
     });
 
@@ -167,7 +180,8 @@ app.post("/payment-success", (req, res) => {
         txn,
         floor,
         slot,
-        plan: req.body.plan
+        plan: req.body.plan,
+        user: currentUser
 
     });
 
