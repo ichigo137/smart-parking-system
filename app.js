@@ -101,11 +101,11 @@ app.get("/login", (req, res) => {
 
 });
 
-app.get("/t/:token", (req, res) => {
+aapp.get("/t/:token", (req, res) => {
 
-    res.redirect(
-      `/login?token=${req.params.token}`
-    );
+    activeToken = req.params.token;
+
+    res.redirect(`/login?token=${req.params.token}`);
 
 });
 
