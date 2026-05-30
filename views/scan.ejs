@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scan Parking Token</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container mt-5 text-center">
+
+    <h1>Scan Parking Token</h1>
+
+    <p>
+        Point your camera at the OLED QR code
+    </p>
+
+    <div id="reader"
+         style="width:300px; margin:auto;">
+    </div>
+
+</div>
+
+<script>
+
+function onScanSuccess(decodedText)
+{
+    window.location =
+        "/login?token=" + decodedText;
+}
+
+let html5QrCode = new Html5Qrcode("reader");
+
+html5QrCode.start(
+    {
+        facingMode: "environment"
+    },
+    {
+        fps: 10,
+        qrbox: 250
+    },
+    onScanSuccess
+);
+
+</script>
+
+</body>
+</html>
