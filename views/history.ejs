@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking History</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #333;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Parking Booking History</h1>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Vehicle</th>
+        <th>Slot</th>
+        <th>Plan</th>
+        <th>Amount</th>
+        <th>Transaction</th>
+        <th>Entry Time</th>
+    </tr>
+
+    <% bookings.forEach(b => { %>
+    <tr>
+        <td><%= b.id %></td>
+        <td><%= b.name %></td>
+        <td><%= b.vehicleNumber %></td>
+        <td><%= b.slot %></td>
+        <td><%= b.plan %></td>
+        <td>₹<%= b.amount %></td>
+        <td><%= b.txn %></td>
+        <td><%= b.entryTime %></td>
+    </tr>
+    <% }) %>
+
+</table>
+
+</body>
+</html>

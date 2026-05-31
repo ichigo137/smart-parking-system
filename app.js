@@ -1,3 +1,7 @@
+require("dotenv").config();
+
+const db = require("./database");
+
 const express = require("express");
 
 const QRCode = require("qrcode");
@@ -5,7 +9,21 @@ const { v4: uuidv4 } = require("uuid");
 
 const bodyParser = require("body-parser");
 
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
+
+const nodemailer = require("nodemailer");
+
 const app = express();
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 
 let parkingStatus = {
     A1: false,
@@ -15,6 +33,7 @@ let parkingStatus = {
 };
 
 app.use(express.static("public"));
+
 
 
 const floors = [
@@ -191,7 +210,7 @@ app.get("/payment", (req, res) => {
 
 });
 
-app.post("/payment-success", (req, res) => {
+app.post("/payment-success", async (req, res) => {
 
     const entryTime = new Date().toLocaleString();
 
@@ -210,7 +229,137 @@ app.post("/payment-success", (req, res) => {
     if (slot === "A-02") parkingStatus.A2 = true;
     if (slot === "B-01") parkingStatus.B1 = true;
     if (slot === "B-02") parkingStatus.B2 = true;
+db.run(
+`
+INSERT INTO bookings
+(
+    name,
+    email,
+    phone,
+    vehicleNumber,
+    vehicleType,
+    slot,
+    floor,
+    plan,
+    amount,
+    txn,
+    entryTime
+)
+VALUES
+(?,?,?,?,?,?,?,?,?,?,?)
+`,
+[
+    currentUser.name,
+    currentUser.email,
+    currentUser.phone,
 
+    currentUser.vehicleNumber,
+    currentUser.vehicleType,
+
+    slot,
+    floor,
+
+    req.body.plan,
+    req.body.amount,
+
+    txn,
+    entryTime
+]
+);
+
+const invoicePath = path.join(
+    __dirname,
+    "invoices",
+    `${txn}.pdf`
+);
+
+const doc = new PDFDocument();
+
+doc.pipe(fs.createWriteStream(invoicePath));
+
+doc.fontSize(22)
+   .text("SMART PARKING INVOICE", {
+       align: "center"
+   });
+
+doc.moveDown();
+
+doc.fontSize(14);
+doc.text(`Transaction ID: ${txn}`);
+doc.text(`Customer Name: ${currentUser.name}`);
+doc.text(`Email: ${currentUser.email}`);
+doc.text(`Phone: ${currentUser.phone}`);
+
+doc.moveDown();
+
+doc.text(`Vehicle Number: ${currentUser.vehicleNumber}`);
+doc.text(`Vehicle Type: ${currentUser.vehicleType}`);
+
+doc.moveDown();
+
+doc.text(`Allocated Slot: ${slot}`);
+doc.text(`Floor: ${floor}`);
+
+doc.moveDown();
+
+doc.text(`Plan: ${req.body.plan}`);
+doc.text("Amount Paid: ₹" + req.body.amount);
+doc.moveDown();
+
+doc.text(`Entry Time: ${entryTime}`);
+
+doc.moveDown();
+doc.moveDown();
+
+doc.fontSize(18)
+   .text("PAYMENT SUCCESSFUL", {
+       align: "center"
+   });
+
+doc.end();
+
+
+setTimeout(() => {
+
+    transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: currentUser.email,
+
+        subject: "Smart Parking Invoice",
+
+        text:
+`Hello ${currentUser.name},
+
+Your parking booking has been confirmed.
+
+Transaction ID: ${txn}
+Vehicle: ${currentUser.vehicleNumber}
+Slot: ${slot}
+Plan: ${req.body.plan}
+Amount: ₹${req.body.amount}
+
+Please find your invoice attached.
+
+Thank you for using Smart Parking.`,
+
+        attachments: [
+            {
+                filename: `${txn}.pdf`,
+                path: invoicePath
+            }
+        ]
+
+    }, (err, info) => {
+
+        if (err) {
+            console.log("Email Error:", err);
+        } else {
+            console.log("Invoice Sent:", info.response);
+        }
+
+    });
+
+}, 1000);
 
     res.render("success", {
 
@@ -249,4 +398,26 @@ app.get("/dashboard", (req, res) => {
     });
 
 });
-//fuuuuuuuuuuuuck
+
+
+
+
+app.get("/history", (req, res) => {
+
+    db.all(
+        "SELECT * FROM bookings ORDER BY id DESC",
+        [],
+        (err, rows) => {
+
+            if (err) {
+                return res.send(err);
+            }
+
+            res.render("history", {
+                bookings: rows
+            });
+        }
+    );
+
+});
+
