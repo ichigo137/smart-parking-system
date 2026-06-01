@@ -399,7 +399,10 @@ app.get("/dashboard", (req, res) => {
 
 });
 
-
+app.get("/open-gate", (req, res) => {
+  paymentDone = true;
+  res.send("Gate Triggered");
+});
 
 
 app.get("/history", (req, res) => {
