@@ -430,3 +430,10 @@ app.get("/history", (req, res) => {
 
 });
 
+app.get("/debug", (req, res) => {
+  res.json({
+    paymentDone,
+    activeToken,
+    currentUser
+  });
+});
