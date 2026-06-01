@@ -273,9 +273,14 @@ VALUES
 ]
 );
 
+const invoicesDir = path.join(__dirname, "invoices");
+
+if (!fs.existsSync(invoicesDir)) {
+    fs.mkdirSync(invoicesDir, { recursive: true });
+}
+
 const invoicePath = path.join(
-    __dirname,
-    "invoices",
+    invoicesDir,
     `${txn}.pdf`
 );
 
