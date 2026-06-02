@@ -216,12 +216,7 @@ app.post("/payment-success", async (req, res) => {
 
  console.log("PAYMENT SUCCESS ROUTE HIT");
 
-    paymentDone = true;
-
-    console.log("paymentDone =", paymentDone);
-
-    paymentDone = true;
-
+   
     const txn =
         "TXN" +
         Math.floor(Math.random() * 1000000);
@@ -408,11 +403,6 @@ app.get("/dashboard", (req, res) => {
         parkingStatus
     });
 
-});
-
-app.get("/open-gate", (req, res) => {
-  paymentDone = true;
-  res.send("Gate Triggered");
 });
 
 
