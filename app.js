@@ -214,6 +214,20 @@ app.post("/payment-success", async (req, res) => {
 
     const entryTime = new Date().toLocaleString();
 
+    console.log("PAYMENT SUCCESS ROUTE HIT");
+
+    paymentDone = true;
+
+    const txn =
+        "TXN" +
+        Math.floor(Math.random() * 1000000);
+
+})
+
+app.post("/payment-success", async (req, res) => {
+
+    const entryTime = new Date().toLocaleString();
+
  console.log("PAYMENT SUCCESS ROUTE HIT");
 
    
