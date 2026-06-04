@@ -268,23 +268,17 @@ VALUES
 ]
 );
 
-const invoicesDir = path.join(__dirname, "invoices");
 
-if (!fs.existsSync(invoicesDir)) {
-    fs.mkdirSync(invoicesDir, { recursive: true });
-}
-
-const invoicePath = path.join(
-    invoicesDir,
-    `${txn}.pdf`
-);
 
 console.log("Before PDF");
 
-
 const doc = new PDFDocument();
 
-doc.pipe(fs.createWriteStream(invoicePath));
+const chunks = [];
+
+doc.on("data", (chunk) => {
+    chunks.push(chunk);
+});
 
 doc.fontSize(22)
    .text("SMART PARKING INVOICE", {
@@ -312,7 +306,8 @@ doc.text(`Floor: ${floor}`);
 doc.moveDown();
 
 doc.text(`Plan: ${req.body.plan}`);
-doc.text("Amount Paid: ₹" + req.body.amount);
+doc.text(`Amount Paid: ₹${req.body.amount}`);
+
 doc.moveDown();
 
 doc.text(`Entry Time: ${entryTime}`);
@@ -325,56 +320,52 @@ doc.fontSize(18)
        align: "center"
    });
 
+doc.on("end", async () => {
+
+    try {
+
+        const pdfBuffer = Buffer.concat(chunks);
+
+        const result = await resend.emails.send({
+
+            from: "Smart Parking <onboarding@resend.dev>",
+
+            to: currentUser.email,
+
+            subject: "Smart Parking Invoice",
+
+            html: `
+                <h2>Parking Booking Confirmed</h2>
+                <p>Hello ${currentUser.name}</p>
+                <p><b>Transaction ID:</b> ${txn}</p>
+                <p><b>Vehicle:</b> ${currentUser.vehicleNumber}</p>
+                <p><b>Slot:</b> ${slot}</p>
+                <p><b>Plan:</b> ${req.body.plan}</p>
+                <p><b>Amount:</b> ₹${req.body.amount}</p>
+            `,
+
+            attachments: [
+                {
+                    filename: `${txn}.pdf`,
+                    content: pdfBuffer.toString("base64")
+                }
+            ]
+
+        });
+
+        console.log("Email sent:", result);
+
+    } catch (err) {
+
+        console.log("Resend Error:", err);
+
+    }
+
+});
+
 doc.end();
+
 console.log("After PDF");
-
-console.log("Attempting email...");
-console.log("EMAIL_USER =", process.env.EMAIL_USER);
-console.log("EMAIL_PASS exists =", !!process.env.EMAIL_PASS);
-
-
-try {
-
-    const pdfBuffer = fs.readFileSync(invoicePath);
-
-    const result = await resend.emails.send({
-
-        from: "Smart Parking <onboarding@resend.dev>",
-
-        to: currentUser.email,
-
-        subject: "Smart Parking Invoice",
-
-        html: `
-            <h2>Parking Booking Confirmed</h2>
-
-            <p>Hello ${currentUser.name},</p>
-
-            <p><b>Transaction ID:</b> ${txn}</p>
-            <p><b>Vehicle:</b> ${currentUser.vehicleNumber}</p>
-            <p><b>Slot:</b> ${slot}</p>
-            <p><b>Plan:</b> ${req.body.plan}</p>
-            <p><b>Amount:</b> ₹${req.body.amount}</p>
-
-            <p>Thank you for using Smart Parking.</p>
-        `,
-
-        attachments: [
-            {
-                filename: `${txn}.pdf`,
-                content: pdfBuffer
-            }
-        ]
-
-    });
-
-    console.log("Email sent:", result);
-
-}
-catch(err)
-{
-    console.log("Resend Error:", err);
-}
 
     res.render("success", {
 
