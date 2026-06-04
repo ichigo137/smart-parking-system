@@ -214,20 +214,6 @@ app.post("/payment-success", async (req, res) => {
 
     const entryTime = new Date().toLocaleString();
 
-    console.log("PAYMENT SUCCESS ROUTE HIT");
-
-    paymentDone = true;
-
-    const txn =
-        "TXN" +
-        Math.floor(Math.random() * 1000000);
-
-})
-
-app.post("/payment-success", async (req, res) => {
-
-    const entryTime = new Date().toLocaleString();
-
  console.log("PAYMENT SUCCESS ROUTE HIT");
 
    
@@ -293,6 +279,9 @@ const invoicePath = path.join(
     `${txn}.pdf`
 );
 
+console.log("Before PDF");
+
+
 const doc = new PDFDocument();
 
 doc.pipe(fs.createWriteStream(invoicePath));
@@ -337,6 +326,11 @@ doc.fontSize(18)
    });
 
 doc.end();
+console.log("After PDF");
+
+console.log("Attempting email...");
+console.log("EMAIL_USER =", process.env.EMAIL_USER);
+console.log("EMAIL_PASS exists =", !!process.env.EMAIL_PASS);
 
 
 setTimeout(() => {
@@ -371,6 +365,8 @@ Thank you for using Smart Parking.`,
 
     }, (err, info) => {
 
+          console.log("MAIL CALLBACK FIRED");
+        
         if (err) {
             console.log("Email Error:", err);
         } else {
