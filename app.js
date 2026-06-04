@@ -13,17 +13,16 @@ const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
 
-const nodemailer = require("nodemailer");
 
 const app = express();
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
+const { Resend } = require("resend");
+
+const resend = new Resend(
+    process.env.RESEND_API_KEY
+);
+
+
 
 let parkingStatus = {
     A1: false,
@@ -333,49 +332,48 @@ console.log("EMAIL_USER =", process.env.EMAIL_USER);
 console.log("EMAIL_PASS exists =", !!process.env.EMAIL_PASS);
 
 
-setTimeout(() => {
+try {
 
-    transporter.sendMail({
-        from: process.env.EMAIL_USER,
+    const pdfBuffer = fs.readFileSync(invoicePath);
+
+    const result = await resend.emails.send({
+
+        from: "Smart Parking <onboarding@resend.dev>",
+
         to: currentUser.email,
 
         subject: "Smart Parking Invoice",
 
-        text:
-`Hello ${currentUser.name},
+        html: `
+            <h2>Parking Booking Confirmed</h2>
 
-Your parking booking has been confirmed.
+            <p>Hello ${currentUser.name},</p>
 
-Transaction ID: ${txn}
-Vehicle: ${currentUser.vehicleNumber}
-Slot: ${slot}
-Plan: ${req.body.plan}
-Amount: ₹${req.body.amount}
+            <p><b>Transaction ID:</b> ${txn}</p>
+            <p><b>Vehicle:</b> ${currentUser.vehicleNumber}</p>
+            <p><b>Slot:</b> ${slot}</p>
+            <p><b>Plan:</b> ${req.body.plan}</p>
+            <p><b>Amount:</b> ₹${req.body.amount}</p>
 
-Please find your invoice attached.
-
-Thank you for using Smart Parking.`,
+            <p>Thank you for using Smart Parking.</p>
+        `,
 
         attachments: [
             {
                 filename: `${txn}.pdf`,
-                path: invoicePath
+                content: pdfBuffer
             }
         ]
 
-    }, (err, info) => {
-
-          console.log("MAIL CALLBACK FIRED");
-        
-        if (err) {
-            console.log("Email Error:", err);
-        } else {
-            console.log("Invoice Sent:", info.response);
-        }
-
     });
 
-}, 1000);
+    console.log("Email sent:", result);
+
+}
+catch(err)
+{
+    console.log("Resend Error:", err);
+}
 
     res.render("success", {
 
